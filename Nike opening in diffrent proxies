@@ -1,0 +1,58 @@
+package com.company;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.Proxy;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class Main {
+    private static int accCount;
+    private static String[] myProxy(){
+        String[] proxies = {"2.56.101.236:8768", "185.126.65.12:7522", "2.56.101.151:8683", "2.56.101.232:8764", "2.56.101.113:8645", "2.56.101.23:8555", "185.126.65.8:7518", "2.56.101.107:8639", "2.56.101.64:8596", "185.126.65.14:7524", "2.56.101.65:8597", "2.56.101.143", "2.56.101.130:8662", "185.126.65.4:7514", "2.56.101.215:8747"};
+        return proxies;
+    }
+    private static ChromeDriver[] driversTriggering(int accCount){
+        System.setProperty("webdriver.chrome.driver", "C:\\Program Files (x86)\\chromedriver.exe");
+        System.out.println("accCount = " + accCount);
+        ChromeDriver[] driver = new ChromeDriver[accCount];
+        ChromeOptions[] options = new ChromeOptions[accCount];
+        ChromeDriver[] returnedDrivers = new ChromeDriver[accCount];
+        DesiredCapabilities[] cap = new DesiredCapabilities[accCount];
+        String[] prxy = myProxy();
+        Proxy p = new Proxy();
+
+        int[] x = new int[accCount];
+        for(int i=0; i<accCount; i++){
+            x[i] = i*500;
+        }
+
+        for(int i=0; i<accCount; i++){
+            options[i] = new ChromeOptions();
+            cap[i] = new DesiredCapabilities();
+            p.setSslProxy(prxy[i]);
+            p.setHttpProxy(prxy[i]);
+            p.setFtpProxy(prxy[i]);
+            cap[i].setCapability(CapabilityType.PROXY, p);
+            options[i].merge(cap[i]);
+            driver[i] = new ChromeDriver(options[i]);
+            driver[i].manage().window().setSize(new Dimension(500, 500));
+            driver[i].manage().window().setPosition(new Point(x[i], 0));
+            driver[i].manage().deleteAllCookies();
+            returnedDrivers[i] = driver[i];
+        }
+        return returnedDrivers;
+    }
+
+
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("How many accounts");
+        accCount = scanner.nextInt();
+        driversTriggering(accCount);
+    }
+}
